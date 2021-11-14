@@ -1,25 +1,21 @@
 import string
+import analysis as analysis
 import inflect
 from collections import Counter
+import nltk
+import ner as ner
 from matplotlib.colors import is_color_like
 from word2number import w2n
-import nltk
-# nltk.download('punkt')
-# nltk.download('averaged_perceptron_tagger')
-p = inflect.engine()
-p.number_to_words(99)
-print(str(p))
-
-sentence = """I am you are they and do not that the feel very good."""
-tokens = nltk.word_tokenize(sentence)
-print(tokens)
-tagged = nltk.pos_tag(tokens)
-print(tagged[:])
 
 
-file = open("dickens.txt", "tr")
+# from nltk.tag.stanford import StanfordNERTagger
+# st = NERTagger('stanford-ner/all.3class.distsim.crf.ser.gz', 'stanford-ner/stanford-ner.jar')
+
+
+#file = open("dickens.txt", "tr")
+file = open("file.txt", "tr")
 data = file.read()
-print(data)
+# print(data)
 
 
 # 1:
@@ -29,36 +25,35 @@ def split_text(data):
 
 
 # 2:
-num_lines = sum(1 for line in open('dickens.txt'))
+def num_of_lines():
+    num_lines = sum(1 for line in open('file.txt'))
+    return num_lines
 
 
 # 3:
 # cleaning
 def clean_text(data):
     data = data.lower()
-    data = data.replace("'s", '')
-    data = data.replace("-", " ")
+    data = data.replace("'s", '')  # remove 's
+    data = data.replace("-", " ")  # remove -
     for i in string.punctuation:
-        data = data.replace(i, " ")
-    return data.strip().split()
+        data = data.replace(i, " ")  # remove all Punctuation
+    return data.strip().split()  # remove \n and split to words
 
 
-print(len(clean_text(data)))
+# print(len(clean_text(data)))
 
 
+# finding unique
 def unique_words(word_list):
-    # finding unique
-    unique = []
-    for word in word_list:
-        if word not in unique:
-            unique.append(word)
-    # print("unique a:", unique)
-    return len(unique)
+    unique_words_list = set(word_list)
+    # print(unique_words_list)
+    return len(unique_words_list)
 
 
 # 4:
 def length_sentences(data):
-    sentences = data.split('.')
+    sentences = data.split('.')  # split for sentences
     avg_len = sum(len(x.split()) for x in sentences) / len(sentences)
     max_len = max(len(i.split()) for i in sentences)
     return avg_len, max_len
@@ -66,36 +61,41 @@ def length_sentences(data):
 
 # 5:
 def most_popular_word(data):
-    # text = [i.lower() for i in data]
-    counter1 = Counter(clean_text(data))
-    most_occur = counter1.most_common(1)
+    counter1 = Counter(clean_text(data))  # count number of appear per words
+    most_occur = counter1.most_common(1)  # take the most common word
     return most_occur
 
 
 def most_popular_syntactic(data):
-    # text = [i.lower() for i in data]
-    tokens = nltk.word_tokenize(clean_text(data))
-    print("len(tokens):", len(tokens))
-    tagged = nltk.pos_tag(tokens)
+    tokens = nltk.word_tokenize(data)  # divide the words as tokenize
+    # print("len(tokens):", len(tokens))
+    tagged = nltk.pos_tag(tokens)  # detect every token type
     tagged = tagged[:]
-    tagged = [i[0] for i in tagged if i[1] != 'DT' or i[1] != 'IN' or i[1] != 'CC' or i[1] != 'VBP']
-    print("tagged:", tagged)
+    # filtering of syntactic words:
+    tagged = [i[0] for i in tagged if i[1] != 'DT' and i[1] != 'IN' and i[1] != 'CC' and i[1] != 'VBP' and i[1] != 'PRP$' and i[1] != 'TO']
+    # print(len(tagged))
+    str1 = ' '.join(str(x) for x in tagged)
+    counter1 = Counter(clean_text(str1))
+    most_occur = counter1.most_common(1)
+    # print("tagged:", tagged)
+    return most_occur
+
+# print(most_popular_syntactic(data))
 
 
-# most_popular_syntactic(data)
 # 6:
 def length_without_k(data):
     notK = []
     for i in split_text(data):
         if 'k' in i:
-            notK.append('##')
+            notK.append('##')  # replace every words with k to '##'
         else:
             notK.append(i)
     new_data = ' '.join(map(str, notK))
-    bb = new_data.split('##')
-    bb = [i.split() for i in bb]
-    str1 = ' '.join(str(x) for x in max(bb, key=len))
-    maxS = max(bb, key=len)
+    new_list = new_data.split('##')  # divide to words sequences without k
+    new_list = [i.split() for i in new_list]
+    str1 = ' '.join(str(x) for x in max(new_list, key=len))
+    maxS = max(new_list, key=len)
     return len(maxS), str1
 
 
@@ -168,21 +168,42 @@ def text2int(textnum, numwords={}):
 
 # 8:
 def color_in_text(data):
-    colors_list = [i for i in clean_text(data) if is_color_like(i)]
+    colors_list = [i for i in clean_text(data) if is_color_like(i)]  # using in color library of python
     return colors_list
 
 
 # 9:
-# sentences = data.split('.')
-# sentences = [i.split() for i in sentences]
-# print(sentences)
+def find_characters_in_text(data):
+    character = []
+    sentences = data.split('.')
+    sentences = [i.split() for i in sentences]
+    # print(sentences)
+    # choosing the relevant words:
+    for i in sentences:
+        for j in i[1:]:
+            if j[0].isupper():
+                character.append(j)
+    str1 = ' '.join(str(x) for x in character)
+    # checking if it's characters:
+    tokens = nltk.word_tokenize(str1)
+    tagged = nltk.pos_tag(tokens)
+    tagged = tagged[:]
+    tagged = [i[0] for i in tagged if i[1] == 'NNP']
+    print(tagged)
+    # print(len(tagged))
+    str1 = ' '.join(str(x) for x in tagged)
+    counter1 = Counter(clean_text(str1))
+    most_occur = counter1.most_common(1)
+    return most_occur
+
 
 # printing results:
 print("1) words:", len(split_text(data)))
-print("2) rows:", num_lines)
-# print("3) uniques: ", unique_words(clean_text(data)))
-print("4) length average:", length_sentences(data)[0], "max length:", length_sentences(data)[1])
-print("5)", most_popular_word(data))
+print("2) rows:", num_of_lines())
+print("3) uniques: ", unique_words(clean_text(data)))
+print("4) length average:", length_sentences(data)[0], ", max length:", length_sentences(data)[1])
+print("5) *", most_popular_word(data))
+print("  **", most_popular_syntactic(data))
 print("6)", length_without_k(data)[1], "\n length:",  length_without_k(data)[0])
 print("8)", Counter(color_in_text(data)))
-
+# print("9)", find_characters_in_text(data))
