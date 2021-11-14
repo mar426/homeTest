@@ -4,28 +4,28 @@ name: Margalit Lionov
 
 ## this code receive as input txt file and output 
 ## analysis of the text:
-## 1) number of words
-## 2) number of rows
-## 3) amount of the unique words in the text
-## 4) length of average sentence, length of the longest sentence
-## 5) * must popular words in the text
-##    ** must popular words in the text without syntactic words
-## 6) The longest word sequence in a text that does not contain the letter k
-## 8) Color names appear in the text, and several times each one appears
-## 9) The names of the characters that appear in the text?  and which is most common within the text
+1) number of words
+2) number of rows
+3) amount of the unique words in the text
+4) length of average sentence, length of the longest sentence
+ 5) * must popular words in the text
+   ** must popular words in the text without syntactic words
+6) The longest word sequence in a text that does not contain the letter k
+8) Color names appear in the text, and several times each one appears
 
 #to run this code, must be installed this packages:
 
-pip install collections-extended
+##pip install collections-extended
 
-pip install matplotlib
+##pip install matplotlib
 
-pip install nltk
+##pip install nltk
 
 
 ##in the first running , you need run this rows to download 'nltk' packages:
 
 nltk.download('punkt')
+
 nltk.download('averaged_perceptron_tagger')
 
 

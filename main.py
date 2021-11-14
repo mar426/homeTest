@@ -12,8 +12,8 @@ from word2number import w2n
 # st = NERTagger('stanford-ner/all.3class.distsim.crf.ser.gz', 'stanford-ner/stanford-ner.jar')
 
 
-#file = open("dickens.txt", "tr")
-file = open("file.txt", "tr")
+file = open("dickens.txt", "tr")
+# file = open("file.txt", "tr")
 data = file.read()
 # print(data)
 
@@ -26,7 +26,7 @@ def split_text(data):
 
 # 2:
 def num_of_lines():
-    num_lines = sum(1 for line in open('file.txt'))
+    num_lines = sum(1 for line in open('dickens.txt'))
     return num_lines
 
 
